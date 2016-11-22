@@ -161,3 +161,31 @@ In this version of the rule, we define three thresholds:
 - EXCEPTION thrown for tests that run longer than 50 ms
 
 Each of those thresholds can be overridden via system properties.
+
+**Where to go from here?**
+This is of course only one of many possible rules we could implement to create
+an early warning system for our tests. But why limit ourselves to rules?
+
+With the `@UnitTest` annotation we introduced categorization to our test suite.
+Categorization allows us to provide specific extensions to certain types of test.
+
+As an example: Unit tests often make use of mocks. Now we could write a simple 
+extension to setup our mock objects for all unit test:
+
+```java
+public class MockitoExtension implements TestInstancePostProcessor{
+    @Override
+    public void postProcessTestInstance(Object testInstance, ExtensionContext context) {
+        MockitoAnnotations.initMocks(testInstance);
+    }
+}
+```
+
+We could also add `@Tag("unit-tests")` to our `@UnitTest` annotation in order to
+allow for the selective execution of 'all unit tests' via command line or in a
+certain build phase.
+
+With JUnit 5 and extension the possibilities are endless!
+
+As always, you can check out the source code for this post on
+[GitHub](https://github.com/nt-ca-aqe/blog-enforcing-nfr-of-tests).
