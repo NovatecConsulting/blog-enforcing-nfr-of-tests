@@ -163,6 +163,7 @@ In this version of the rule, we define three thresholds:
 Each of those thresholds can be overridden via system properties.
 
 **Where to go from here?**
+
 This is of course only one of many possible rules we could implement to create
 an early warning system for our tests. But why limit ourselves to rules?
 
