@@ -81,10 +81,9 @@ following:
 public @interface ApplyUnitTestConstraints {}
 ```
 
-With this annotation we can classify all of our test classes as unit tests.
-For each `@ApplyUnitTestConstraints` all the extensions specified in that annotation will
-be loaded. This means we can add rules later, without having to change any of
-the tests.
+For each test class annotated with `@ApplyUnitTestConstraints`, all the specified
+extensions will be loaded. This means we can add rules later, without having to
+change any of the tests.
 
 ```java
 @ApplyUnitTestConstraints
@@ -167,8 +166,9 @@ Each of those thresholds can be overridden via system properties.
 This is of course only one of many possible rules we could implement to create
 an early warning system for our tests. But why limit ourselves to rules?
 
-With the `@ApplyUnitTestConstraints` annotation we introduced categorization to our test suite.
-Categorization allows us to provide specific extensions to certain types of test.
+If we change our `@ApplyUnitTestConstraints` annotation to a more generic `@UnitTest`,
+we introduced categorization to our test suite.
+This allows us to apply specific extensions and properties to certain types of test.
 
 As an example: Unit tests often make use of mocks. Now we could write a simple 
 extension to setup our mock objects for all unit test:
@@ -182,7 +182,7 @@ public class MockitoExtension implements TestInstancePostProcessor{
 }
 ```
 
-We could also add `@Tag("unit-tests")` to our `@ApplyUnitTestConstraints` annotation in order to
+We could also add `@Tag("unit-tests")` to our `@UnitTest` annotation in order to
 allow for the selective execution of 'all unit tests' via command line or in a
 certain build phase.
 
