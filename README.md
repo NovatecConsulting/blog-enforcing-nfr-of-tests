@@ -6,7 +6,7 @@ As an example, unit tests should ...
 - not take longer than 10 ms
 - not interact with the file system
 - not make use of a database
-- not waste time waiting on something
+- not waste time waiting for something
 
 With this post I will demonstrate how to check one of these requirements using
 JUnit 5. For this I will implement an extension to measure the execution time
@@ -26,7 +26,7 @@ public class UnitTestDurationRule implements BeforeTestExecutionCallback, AfterT
         long now = System.nanoTime();
         long durationInMillis = TimeUnit.NANOSECONDS.toMillis(now - start);
         if (durationInMillis > 10L) {
-            String message = "Test is to slow to be a unit test! Duration should be <= 10ms, was: "
+            String message = "Test is too slow to be a unit test! Duration should be <= 10ms, was: "
                 + durationInMillis + "ms.";
             throw new IllegalStateException(message);
         }
@@ -44,8 +44,8 @@ We use nanoseconds because `System.currentTimeMillis()` is not precise enough wh
 our threshold is in the low milliseconds.
 
 This value is used as the start timestamp in `afterTestExecution`. Here we calculate
-the difference between now and when the tests started to get it's exact duration.
-Or at least as close as we can get it anyway. If this duration is higher than 10
+the difference between now and when the test started to get it's exact duration, 
+or at least as close as we can get it. If this duration is higher than 10
 milliseconds, we throw an exception stating the rule and the actual duration of
 the test.
 
@@ -78,16 +78,16 @@ following:
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(UnitTestDurationRule.class)
-public @interface UnitTest {}
+public @interface ApplyUnitTestConstraints {}
 ```
 
 With this annotation we can classify all of our test classes as unit tests.
-For each `@UnitTest` all the the extensions specified in that annotation will
-be loaded. Which means we can add rules later, without having to change any of
+For each `@ApplyUnitTestConstraints` all the extensions specified in that annotation will
+be loaded. This means we can add rules later, without having to change any of
 the tests.
 
 ```java
-@UnitTest
+@ApplyUnitTestConstraints
 public class SomeTest {
 
     @Test
@@ -105,7 +105,7 @@ public class SomeTest {
 ```
 
 Of course this implementation of the rule is rather simple. It is not configurable,
-a fixed threshold of 10ms might be prone to false positives and we might want 
+a fixed threshold of 10ms might be prone to false positives, and we might want 
 to be a little bit more lenient with throwing an exception.
 
 So the final rule could look a little more like this:
@@ -167,7 +167,7 @@ Each of those thresholds can be overridden via system properties.
 This is of course only one of many possible rules we could implement to create
 an early warning system for our tests. But why limit ourselves to rules?
 
-With the `@UnitTest` annotation we introduced categorization to our test suite.
+With the `@ApplyUnitTestConstraints` annotation we introduced categorization to our test suite.
 Categorization allows us to provide specific extensions to certain types of test.
 
 As an example: Unit tests often make use of mocks. Now we could write a simple 
@@ -182,7 +182,7 @@ public class MockitoExtension implements TestInstancePostProcessor{
 }
 ```
 
-We could also add `@Tag("unit-tests")` to our `@UnitTest` annotation in order to
+We could also add `@Tag("unit-tests")` to our `@ApplyUnitTestConstraints` annotation in order to
 allow for the selective execution of 'all unit tests' via command line or in a
 certain build phase.
 
